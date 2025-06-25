@@ -10,35 +10,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="?attr/colorPrimaryContainer"> <com.google.android.material.appbar.CollapsingToolbarLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-        app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineLarge"
-        app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
-        app:expandedTitleGravity="bottom|center_horizontal" > <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin"
-        app:menu="@menu/main_menu"
-        app:title=""/> </com.google.android.material.appbar.CollapsingToolbarLayout>
+        android:background="?attr/colorPrimaryContainer">
 
-        <HorizontalScrollView
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroup_filtre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                app:singleSelection="true" />
-        </HorizontalScrollView>
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+            app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+            app:expandedTitleGravity="bottom|center_horizontal" >
 
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:menu="@menu/main_menu"
+                app:title=""/>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -62,10 +55,42 @@
             android:orientation="vertical"
             android:visibility="gone"
             tools:visibility="visible">
-        </LinearLayout>
 
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:alpha="0.5"
+                android:src="@drawable/ic_empty_list"
+                app:tint="?attr/colorOnSurface"
+                android:contentDescription="Boş liste ikonu" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Henüz hiç ilaç eklemediniz."
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:alpha="0.7"
+                android:text="Başlamak için + butonuna dokunun."
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        </LinearLayout>
     </FrameLayout>
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_filtre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:contentDescription="Filtrele"
+        app:srcCompat="@drawable/ic_filter" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_ilac"

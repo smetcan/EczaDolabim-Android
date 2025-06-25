@@ -14,7 +14,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -22,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eczadolabim.databinding.ActivityMainBinding
-import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -30,22 +28,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: IlacListAdapter
 
+    // YENİ: Veritabanından gelen kişi listesini tutmak için bir sınıf değişkeni
+    private var tumKisiler: List<Kisi> = emptyList()
+
     private val ilacViewModel: IlacViewModel by viewModels {
         IlacViewModelFactory((application as IlaclarApplication).repository)
     }
 
     private val addIlacActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // Liste LiveData sayesinde otomatik güncellendiği için burada özel bir işlem yapmıyoruz.
+            // LiveData sayesinde liste otomatik güncellenir.
         }
     }
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                // İzin verildi.
+                // İzin verildi, harika!
             } else {
-                Toast.makeText(this, "Bildirim izni verilmedi.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Bildirim izni, son kullanma tarihi uyarıları için gereklidir.", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerView()
         observeViewModel()
-        setupFab()
+        setupActionButtons()
         setupSwipeToDelete()
         askNotificationPermission()
     }
@@ -83,84 +84,53 @@ class MainActivity : AppCompatActivity() {
                 binding.layoutEmptyState.visibility = View.GONE
             }
         }
-
+        // Kişi listesini gözlemleyip sınıf değişkenimize kaydediyoruz.
         ilacViewModel.allKisiler.observe(this) { kisiler ->
-            updateFiltreChipGroup(kisiler)
+            this.tumKisiler = kisiler ?: emptyList()
         }
     }
 
-    private fun setupFab() {
+    private fun setupActionButtons() {
         binding.fabAddIlac.setOnClickListener {
             val intent = Intent(this@MainActivity, AddIlacActivity::class.java)
             addIlacActivityLauncher.launch(intent)
         }
+
+        binding.fabFiltre.setOnClickListener {
+            showFiltreDialog()
+        }
     }
 
-    private fun updateFiltreChipGroup(kisiler: List<Kisi>?) {
-        val chipGroup = binding.chipGroupFiltre
-        val seciliChipId = chipGroup.checkedChipId
-        val seciliChipText = if (seciliChipId != -1) chipGroup.findViewById<Chip>(seciliChipId)?.text else "TÜMÜ"
+    private fun showFiltreDialog() {
+        // Artık LiveData'nın anlık değerine değil, her zaman güncel olan sınıf değişkenimize güveniyoruz.
+        val kisiler = this.tumKisiler
 
-        chipGroup.removeAllViews()
+        val secenekler = mutableListOf("TÜMÜ")
+        kisiler.forEach { kisi -> secenekler.add(kisi.isim) }
 
-        val tumuChip = Chip(this).apply {
-            text = "TÜMÜ"
-            isCheckable = true
-            id = View.generateViewId()
-        }
-        chipGroup.addView(tumuChip)
-
-        kisiler?.forEach { kisi ->
-            val kisiChip = Chip(this).apply {
-                text = kisi.isim
-                isCheckable = true
-                id = View.generateViewId()
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Kişiye Göre Filtrele")
+            .setItems(secenekler.toTypedArray()) { dialog, which ->
+                val secilenKisi = secenekler[which]
+                ilacViewModel.filtrele(secilenKisi)
+                Toast.makeText(this, "'$secilenKisi' filtresi uygulandı.", Toast.LENGTH_SHORT).show()
             }
-            chipGroup.addView(kisiChip)
-        }
-
-        var secimYapildi = false
-        for (i in 0 until chipGroup.childCount) {
-            val chip = chipGroup.getChildAt(i) as Chip
-            if (chip.text == seciliChipText) {
-                chip.isChecked = true
-                secimYapildi = true
-                break
-            }
-        }
-
-        if (!secimYapildi) {
-            tumuChip.isChecked = true
-        }
-
-        binding.chipGroupFiltre.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (checkedIds.isNotEmpty()) {
-                val secilenChip = group.findViewById<Chip>(checkedIds.first())
-                ilacViewModel.filtrele(secilenChip.text.toString())
-            } else {
-                tumuChip.isChecked = true
-            }
-        }
+            .show()
     }
 
     private fun setupSwipeToDelete() {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                return false
-            }
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 val silinecekIlac = adapter.currentList[position]
+
                 MaterialAlertDialogBuilder(this@MainActivity)
                     .setTitle("İlaç Sil")
                     .setMessage("'${silinecekIlac.ilacAdi}' ilacını silmek istediğinizden emin misiniz?")
-                    .setNegativeButton("Hayır") { _, _ ->
-                        adapter.notifyItemChanged(viewHolder.adapterPosition)
-                    }
-                    .setPositiveButton("Evet") { _, _ ->
-                        ilacViewModel.delete(silinecekIlac)
-                    }
+                    .setNegativeButton("Hayır") { _, _ -> adapter.notifyItemChanged(position) }
+                    .setPositiveButton("Evet") { _, _ -> ilacViewModel.delete(silinecekIlac) }
                     .show()
             }
 
