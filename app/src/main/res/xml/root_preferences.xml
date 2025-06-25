@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="Bildirim Ayarları">
+
+        <SeekBarPreference
+            app:key="uyari_gunu"
+            app:title="Uyarı Günü Sayısı"
+            app:summary="Bildirimlerin kaç gün önce gönderileceği"
+            android:defaultValue="30"
+            android:max="90"
+            app:min="7"
+            app:showSeekBarValue="true"
+            app:updatesContinuously="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Kişi Yönetimi">
+        <Preference
+            app:key="yonet_kisiler"
+            app:title="Kişileri Yönet"
+            app:summary="Uygulamadaki kişi listesini düzenleyin."/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Ara"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="Sırala"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/action_sort_by_name"
+                android:title="Ada Göre Sırala" />
+            <item
+                android:id="@+id/action_sort_by_date"
+                android:title="Tarihe Göre Sırala" />
+            <item
+                android:id="@+id/action_settings"
+                android:title="Ayarlar"
+                app:showAsAction="never" />
+        </menu>
+    </item>
+</menu>
