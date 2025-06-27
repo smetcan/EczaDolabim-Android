@@ -4,21 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/arka_plan"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         android:fitsSystemWindows="true"
-        android:background="?attr/colorPrimaryContainer">
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineLarge"
             app:collapsedTitleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
-            app:expandedTitleGravity="bottom|center_horizontal" >
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleGravity="bottom|center_horizontal"
+            app:expandedTitleTextAppearance="@style/TextAppearance.Material3.HeadlineLarge"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:title="@string/app_name">
+
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
@@ -26,7 +31,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/main_menu"
-                app:title=""/>
+                app:title="" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -60,9 +65,9 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:alpha="0.5"
+                android:contentDescription="Boş liste ikonu"
                 android:src="@drawable/ic_empty_list"
-                app:tint="?attr/colorOnSurface"
-                android:contentDescription="Boş liste ikonu" />
+                app:tint="?attr/colorOnSurface" />
 
             <TextView
                 android:layout_width="wrap_content"
